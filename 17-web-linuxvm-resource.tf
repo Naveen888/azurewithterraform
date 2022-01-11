@@ -23,8 +23,8 @@ resource "azurerm_linux_virtual_machine_scale_set" "web_vmss" {
   #computer_name = "web-linx-vm"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  sku                = "Standard_DS1_v2"
-  instances = 2
+  sku                 = "Standard_DS1_v2"
+  instances           = 2
   admin_username      = "azureuser"
   # admin_password = "Azure@123456789"
 
@@ -44,16 +44,16 @@ resource "azurerm_linux_virtual_machine_scale_set" "web_vmss" {
     sku       = "83-gen2"
     version   = "latest"
   }
-    upgrade_mode = "Automatic"
+  upgrade_mode = "Automatic"
   network_interface {
-    name = "web-vmss-nic"
-    primary = "true"
+    name                      = "web-vmss-nic"
+    primary                   = "true"
     network_security_group_id = azurerm_network_security_group.web_vmss_nsg.id
     ip_configuration {
-      name = "internal"
-      primary = true
-      subnet_id = azurerm_subnet.websubnet.id
-    load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.web_lb_backend_address_pool.id]
+      name                                   = "internal"
+      primary                                = true
+      subnet_id                              = azurerm_subnet.websubnet.id
+      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.web_lb_backend_address_pool.id]
     }
   }
   #custom_data = filebase64("{path.module}/app-scripts/redhat-webvm-script.sh")
