@@ -7,36 +7,36 @@ resource "azurerm_subnet" "appsubnet" {
 
 #we will create a nsg 
 resource "azurerm_network_security_group" "app_subnet_nsg" {
-    name = "${azurerm_subnet.appsubnet.name}-nsg"
-    location = azurerm_resource_group.rg.location
-    resource_group_name = azurerm_resource_group.rg.name
+  name                = "${azurerm_subnet.appsubnet.name}-nsg"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
 }
 
 #assocaite the nsg witha  subnet
 resource "azurerm_subnet_network_security_group_association" "app_subnet_nsg_association" {
-    depends_on = [
-      azurerm_network_security_rule.app_nsg_rule_inbound
-    ]
-    subnet_id = azurerm_subnet.appsubnet.id 
-    network_security_group_id = azurerm_network_security_group.app_subnet_nsg.id
+  depends_on = [
+    azurerm_network_security_rule.app_nsg_rule_inbound
+  ]
+  subnet_id                 = azurerm_subnet.appsubnet.id
+  network_security_group_id = azurerm_network_security_group.app_subnet_nsg.id
 }
 #local block for security rule
 locals {
-    app_inbound_ports_maps = {
-        #in local if your key start with string or character the value you need to define using =
-        #in local if your key start with number the value sjhoul;d be in :
-        "110" : "443",
-        "120" : "22",
-        "130" : "8080"
-    }
+  app_inbound_ports_maps = {
+    #in local if your key start with string or character the value you need to define using =
+    #in local if your key start with number the value sjhoul;d be in :
+    "110" : "443",
+    "120" : "22",
+    "130" : "8080"
+  }
 }
 
 
 #we will create a nsg rule 
 resource "azurerm_network_security_rule" "app_nsg_rule_inbound" {
-  for_each = local.app_inbound_ports_maps
+  for_each                    = local.app_inbound_ports_maps
   name                        = "Rule-Port${each.value}" #Rule-Port-443
-  priority                    = each.key #110
+  priority                    = each.key                 #110
   direction                   = "Inbound"
   access                      = "Allow"
   protocol                    = "Tcp"

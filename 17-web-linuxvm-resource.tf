@@ -1,6 +1,6 @@
 #localblock block for custom data
 locals {
-web_custom_data = <<CUSTOM_DATA
+  web_custom_data = <<CUSTOM_DATA
 #!/bin/sh
 #sudo yum update -y
 sudo yum install -y httpd
@@ -18,17 +18,15 @@ sudo curl -H "Metadata:true" --noproxy "*" "http://169.254.169.254/metadata/inst
 CUSTOM_DATA
 }
 
-resource "azurerm_linux_virtual_machine" "web_linuxvm" {
-  name                = "${local.resource_name_prefix}-web-linuxvm"
+resource "azurerm_linux_virtual_machine_scale_set" "web_vmss" {
+  name = "${local.resource_name_prefix}-web-linuxvm"
   #computer_name = "web-linx-vm"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  size                = "Standard_DS1_v2"
+  sku                = "Standard_DS1_v2"
+  instances = 2
   admin_username      = "azureuser"
- # admin_password = "Azure@123456789"
-  network_interface_ids = [
-    azurerm_network_interface.web_linuxvm_nic.id,
-  ]
+  # admin_password = "Azure@123456789"
 
   admin_ssh_key {
     username   = "azureuser"
@@ -45,6 +43,18 @@ resource "azurerm_linux_virtual_machine" "web_linuxvm" {
     offer     = "RHEL"
     sku       = "83-gen2"
     version   = "latest"
+  }
+    upgrade_mode = "Automatic"
+  network_interface {
+    name = "web-vmss-nic"
+    primary = "true"
+    network_security_group_id = azurerm_network_security_group.web_vmss_nsg.id
+    ip_configuration {
+      name = "internal"
+      primary = true
+      subnet_id = azurerm_subnet.websubnet.id
+    load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.web_lb_backend_address_pool.id]
+    }
   }
   #custom_data = filebase64("{path.module}/app-scripts/redhat-webvm-script.sh")
   custom_data = base64encode(local.web_custom_data)

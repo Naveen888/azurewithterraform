@@ -1,11 +1,11 @@
 resource "azurerm_public_ip" "web_linuxvm_publicip" {
   name = "${local.resource_name_prefix}-web-linuxvm-publicip"
-   
-    location = azurerm_resource_group.rg.location
-    resource_group_name = azurerm_resource_group.rg.name
-    
+
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
   allocation_method = "Static" #dynamic
-  sku = "Standard"
+  sku               = "Standard"
   domain_name_label = "app1-vm-${random_string.myrandom.id}"
-  tags = local.common_tags
+  tags              = local.common_tags
 }
