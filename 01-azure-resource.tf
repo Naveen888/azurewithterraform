@@ -9,6 +9,12 @@ terraform {
       source = "hashicorp/random"
       version = ">=3.0"
     }
+    backend "azurerm" {
+      resource_group_name = "terraform-storage-gd"
+      storage_account_name = "terraformstategd"
+      container = "tfstatefiles"
+      key = "project"
+    }
   }
 }
 
