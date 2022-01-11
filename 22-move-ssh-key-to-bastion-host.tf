@@ -8,11 +8,11 @@ resource "null_resource" "name" {
     type        = "ssh"
     host        = azurerm_linux_virtual_machine.bastion_host_linuxvm.public_ip_address
     user        = azurerm_linux_virtual_machine.bastion_host_linuxvm.admin_username
-    private_key = file("~/.ssh/id_rsa.pub")
+    private_key = file("C:/Users/gopal/.ssh/id_rsa")
   }
   #file provionser
   provisioner "file" {
-    source     = "~/.ssh/id_rsa.pub"
+    source     = "C:/Users/gopal/.ssh/id_rsa"
     destination = "/tmp/id_rsa.pem"
 #remote exec
   }
